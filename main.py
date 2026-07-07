@@ -42,4 +42,35 @@ class ChatbotAssistant:
     @staticmethod
     def tokenize_and_lemmatize(text):
         lemmatizer = nltk.WordNetLemmatizer()
-        words = nltk.word_tokenize(text)
+        words = nltk.word_tokenize(text) #Tokenizes the text into individual words
+        words = [lemmatizer.lemmatize(word.lower()) for word in words]
+        #Lemmatizes the words and converts them to lowercase
+        return words
+    
+    @staticmethod
+    def bag_of_words(words, vocabulary):
+        return [1 if word in words else 0 for word in vocabulary]
+    
+    def parse_intents(self):
+        lemmatizer = nltk.WordNetLemmatizer()
+        if os.path.exists(self.intents_path):
+            with open(self.intents_path, 'r') as f:
+                intents_data = json.load(f)
+            intents=[]
+            intents_responses=[]
+            vocabulary=[]
+            documents=[]
+            for intent in intents_data['intents']:
+                if intent['tag'] not in self.intents:
+                    self.intents.append(intent['tag'])
+                    self.intents_responses[intent['tag']] = intent['responses']
+
+                for pattern in intent['patterns']:
+                    pattern_words = self.tokenize_and_lemmatize(pattern)
+                    self.vocabulary.extend(pattern_words)
+                    self.documents.append((pattern_words, intent['tag']))
+
+                self.vocabulary = sorted(set(self.vocabulary))
+                
+
+
