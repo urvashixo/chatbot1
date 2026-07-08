@@ -80,24 +80,30 @@ class ChatbotAssistant:
                     self.documents.append((pattern_words, intent['tag']))
 
                 self.vocabulary = sorted(set(self.vocabulary))
+                #now we have a filled vocabulary with unique words and a list of documents with their corresponding intents
 
     def prepare_data(self):
+        #prepare the data to use in neural network
         bags = []
         indices = []
 
         for document in self.documents:
             words = document[0]
             bag = self.bag_of_words(words)
+            #turns em into 0 and 1s
 
             intent_index = self.intents.index(document[1])
 
-            bags.append(bag)
-            indices.append(intent_index)
+            bags.append(bag) #bags of data
+            indices.append(intent_index) 
 
         self.X = np.array(bags)
-        self.y = np.array(indices)
+        self.y = np.array(indices) #poositions of words
 
     def train_model(self, batch_size, lr, epochs):
+        #lr is learning rate, epochs is number of times we go through the entire dataset
+        #lr is basically how fast the model moves towards steepest descent
+        #batch size is how many instances we process in parallel
         X_tensor = torch.tensor(self.X, dtype=torch.float32)
         y_tensor = torch.tensor(self.y, dtype=torch.long)
 
@@ -105,8 +111,9 @@ class ChatbotAssistant:
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
         self.model = ChatbotModel(self.X.shape[1], len(self.intents)) 
+        #shape[1] is the number of features in the input data, which is the size of the bag of words vector.
 
-        criterion = nn.CrossEntropyLoss()
+        criterion = nn.CrossEntropyLoss() #loss function
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         for epoch in range(epochs):
