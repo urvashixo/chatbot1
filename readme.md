@@ -160,12 +160,5 @@ numpy
 nltk
 
 
-## Future Improvements
 
-- Add stemming or lemmatization.
-- Support context-aware conversations.
-- Improve intent classification accuracy.
-- Add a GUI using Tkinter or PyQt.
-- Build a web interface with Flask or FastAPI.
-- Deploy the chatbot online.
 
